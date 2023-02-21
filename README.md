@@ -4,6 +4,7 @@
 
 - authors : Sylvie Dagoret-Campagne & Martin Rodriguez Monroy
 - affiliation : IJCLab/IN2P3/CNRS
+- Last verification : February 2021
 
 ## Goal
 
@@ -47,6 +48,19 @@ Package to emulate atmospheric transparency
 This path should be provided during runtime at initialisation.
 
 (see in the notebooks)
+
+
+### c) Installation of rubin_sim package
+
+Package to simulate Rubin-LSST, including Filters, SED
+
+    
+    git clone https://github.com/lsst/rubin_sim.git
+    
+Follow the installation instructions including the corresponding data: `rubin_sim_data`
+
+
+    
 
 
 
