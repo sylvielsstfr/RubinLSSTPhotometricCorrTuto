@@ -61,7 +61,12 @@ Follow the installation instructions including the corresponding data: `rubin_si
 
 
     
+Moreover there is a `rubin_sim` tutorial which may be read in order to
+use the  `rubin_sim` library:
 
+    https://github.com/lsst/rubin_sim_notebooks
+      
+In particular, magnitude calculation from the SED and filter function and the photoelectron statistic and sky background errors. 
 
 
 
