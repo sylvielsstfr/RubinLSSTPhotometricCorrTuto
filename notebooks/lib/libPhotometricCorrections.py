@@ -85,9 +85,9 @@ class PhotometricCorrections:
         if ncomp == 1:
           taus = [tau0]
           betas = [beta0]    
-          self.std_atm = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0,ncomp=ncomp, taus=taus, betas=betas, flagAerosols=True)
+          self.atm_std = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0,ncomp=ncomp, taus=taus, betas=betas, flagAerosols=True)
         else:
-          self.std_atm = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0)
+          self.atm_std = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0)
           
         # instrumental filter
         self.bandpass_inst = {} 
@@ -101,22 +101,35 @@ class PhotometricCorrections:
           self.bandpass_inst[fname] = Bandpass(wavelen=self.WL,sb=ff(self.WL))
           
         # total filter (instrumental x atmosphere)  
-        self.bandpass_total = {} 
+        self.bandpass_total_std = {} 
         for index,f in enumerate(filter_tagnames):
-          self.bandpass_total[f] = Bandpass(wavelen=self.WL,sb=self.bandpass_inst[f].sb * self.std_atm)
+          self.bandpass_total_std[f] = Bandpass(wavelen=self.WL,sb=self.bandpass_inst[f].sb * self.atm_std)
          
         # Normalized response 
-        self.phiArray, _ = Sed().setup_phi_array([self.bandpass_total[f] for f in filter_tagnames])
+        self.phiArray_std, _ = Sed().setup_phi_array([self.bandpass_total_std[f] for f in filter_tagnames])
         
         # Integrals IIb0(std) and IIb1(std)
         self.all_II0_std = {}
         self.all_II1_std = {}
         for index,f in enumerate(filter_tagnames):
     
-          the_II0 = self.fII0(self.bandpass_total[f].wavelen,self.bandpass_total[f].sb)
+          the_II0 = self.fII0(self.bandpass_total_std[f].wavelen,self.bandpass_total_std[f].sb)
           self.all_II0_std[f] = the_II0
-          the_II1 = self.fII1(self.WL,self.phiArray[index,:],FILTERWL[index,2])
+          the_II1 = self.fII1(self.WL,self.phiArray_std[index,:],FILTERWL[index,2])
           self.all_II1_std[f] = the_II1
+          
+          
+        # Non standard calculations will be caculated later
+        self.atm_nonstd = None
+        self.bandpass_total_nonstd = None
+        self.phiArray_nonstd = None
+        self.all_II0_nonstd = None
+        self.all_II1_nonstd = None
+        self.all_II0ratio_nonstd = None
+        self.all_II1sub_nonstd = None
+        
+        
+         
           
   def fII0(self,wl,s):
         return np.trapz(s/wl,wl)
@@ -124,7 +137,10 @@ class PhotometricCorrections:
   def fII1(self,wl,phi,wlb):
         return np.trapz(phi*(wl-wlb),wl)
       
-  
+  def CalculateObs(self):
+        """
+        """
+        pass
       
            
           
