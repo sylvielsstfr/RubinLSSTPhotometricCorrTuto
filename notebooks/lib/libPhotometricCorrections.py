@@ -261,6 +261,22 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
+            
+        elif isinstance(tau, list) or isinstance(tau, np.ndarray): 
+          if isinstance(tau, list):
+            all_tau = np.array(tau)
+          else:
+            all_tau = tau
+          ncomp = 1  
+          for tau in all_tau:
+            self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
+            self.coll_atm_nonstd.append(self.atm_nonstd)
+            self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
+            self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
+            self.coll_all_II0_nonstd.append(self.all_II0_nonstd) 
+            self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
+            self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
+            self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
         
         else:
           print("Not implemented yet")   
