@@ -221,7 +221,7 @@ class PhotometricCorrections:
           for am in all_am:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
-            self.coll_bandpass_total_nonstd.append(self.coll_bandpass_total_nonstd)
+            self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
             self.coll_all_II0_nonstd.append(self.all_II0_nonstd) 
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
@@ -238,7 +238,7 @@ class PhotometricCorrections:
           for pwv in all_pwv:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
-            self.coll_bandpass_total_nonstd.append(self.coll_bandpass_total_nonstd)
+            self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
             self.coll_all_II0_nonstd.append(self.all_II0_nonstd) 
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
@@ -255,7 +255,7 @@ class PhotometricCorrections:
           for oz in all_oz:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
-            self.coll_bandpass_total_nonstd.append(self.coll_bandpass_total_nonstd)
+            self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
             self.coll_all_II0_nonstd.append(self.all_II0_nonstd) 
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
@@ -263,7 +263,9 @@ class PhotometricCorrections:
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
         
         else:
-          print("Not implemented yet")             
+          print("Not implemented yet")   
+          
+                  
           
         
           
