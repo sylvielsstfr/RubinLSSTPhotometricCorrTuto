@@ -151,6 +151,9 @@ class PhotometricCorrections:
         self.coll_all_II0ratio_nonstd = None
         self.coll_all_II1sub_nonstd = None
         
+        self.allparameters = None
+        self.allcollperfilter = None
+        
         
          
           
@@ -159,6 +162,35 @@ class PhotometricCorrections:
       
   def fII1(self,wl,phi,wlb):
         return np.trapz(phi*(wl-wlb),wl)
+      
+  def CalculatePerfilter(self):
+        """
+        Make collections of numbers per param
+        """
+        
+        self.allcollperfilter = {} # init the main directory
+        for ifilt,f in enumerate(filter_tagnames):
+          list_II0_nonstd = []
+          list_II1_nonstd = []
+          list_II0ratio_nonstd = []
+          list_II1sub_nonstd = []
+              
+          for idx,param in enumerate(self.allparameters):
+            list_II0_nonstd.append(self.coll_all_II0_nonstd[idx][f])
+            list_II1_nonstd.append(self.coll_all_II1_nonstd[idx][f])
+            list_II0ratio_nonstd.append(self.coll_all_II0ratio_nonstd[idx][f])
+            list_II1sub_nonstd.append(self.coll_all_II1sub_nonstd[idx][f])
+                
+          filter_dict = {}
+          filter_dict["II0_nonstd"] = np.array(list_II0_nonstd)
+          filter_dict["II1_nonstd"] = np.array(list_II1_nonstd)
+          filter_dict["II0ratio_nonstd"] = np.array(list_II0ratio_nonstd)
+          filter_dict["II1sub_nonstd"] = np.array(list_II1sub_nonstd)
+          
+          self.allcollperfilter[f] = filter_dict     
+                    
+              
+              
       
   def CalculateObs(self,am=1.2,pwv=5.0,oz=300,ncomp=1,tau=0.04,beta=-1):
         """
@@ -218,6 +250,9 @@ class PhotometricCorrections:
             all_am = np.array(am)
           else:
             all_am = am
+            
+          self.allparameters = all_am
+          
           for am in all_am:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -234,6 +269,8 @@ class PhotometricCorrections:
             all_pwv = np.array(pwv)
           else:
             all_pwv = pwv
+            
+          self.allparameters = all_pwv
             
           for pwv in all_pwv:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
@@ -252,6 +289,8 @@ class PhotometricCorrections:
           else:
             all_oz = oz
             
+          self.allparameters = all_oz
+            
           for oz in all_oz:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -268,6 +307,9 @@ class PhotometricCorrections:
           else:
             all_tau = tau
           ncomp = 1  
+          
+          self.allparameters = all_tau
+          
           for tau in all_tau:
             self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -279,7 +321,9 @@ class PhotometricCorrections:
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
         
         else:
-          print("Not implemented yet")   
+          print("Not implemented yet")  
+          
+        self.CalculatePerfilter() 
           
                   
           
