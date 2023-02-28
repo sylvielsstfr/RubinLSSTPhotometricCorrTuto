@@ -4,26 +4,33 @@
 
 - authors : Sylvie Dagoret-Campagne & Martin Rodriguez Monroy
 - affiliation : IJCLab/IN2P3/CNRS
-- Last verification : February 2021
+- Creaiton date : February 2023
+- Last verification : February 28th 2023
 
 ## Goal
 
 Understand the impact of atmospheric transparency variations on photometry, the necessity to estimate those variations and the necessity to correct them up to some level.
 
-###1. Estimation of atmospheric variation by measuring spectra fro calibration stars with the Rubin-LSST auxiliary telescope
-
-###2. LSST Flux corrections
-
-###3. Impact on science
-- example Photoz 
 
 ## Program
 
+### Part 01 : Estimation of atmospheric parameters
 
-![Workflow][def]
+After a general introduction, an example of fitting atmospheric parameters from spectra are show.
+
+First steps in this tutorial, may be skipped.
+
+### Part 02 : Photometric Corrections
+The core of this tutorial are how to calculate Photometric correction.
+
+It is possible to exploit SED-color dependence on observed fluxes in order to guess the SED shape (average slope) in each band.
 
 
-[def]: workflow_Feb152023.jpeg
+### Part 03 : Applications
+Study the impact on science after applied photometric corrections.
+
+Still under developpement.
+
 
 
 ## Code Installation
