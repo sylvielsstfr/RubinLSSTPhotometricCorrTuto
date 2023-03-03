@@ -67,6 +67,14 @@ Package to simulate Rubin-LSST, including Filters, SED
 Follow the installation instructions including the corresponding data: `rubin_sim_data`
 
 
+I recommend installing `rubin_sim_data` in home directory:
+
+	/Users/dagoret/rubin_sim_data>ls
+	draft_connected_v2.99_10yrs.db movingObjects                  sim_baseline                   skybrightness_pre              versions.txt
+	maf                            orbits                         site_models                    tests
+	maps                           photometry_sample              skybrightness                  throughputs
+
+
     
 Moreover there is a `rubin_sim` tutorial which may be read in order to
 use the  `rubin_sim` library:
@@ -76,9 +84,15 @@ use the  `rubin_sim` library:
 In particular, magnitude calculation from the SED and filter function and the photoelectron statistic and sky background errors. 
 
 
+The `rubin_sim_data/photometry_sample` may not contain SEDs
 For the SED, I found them here
 
     https://github.com/rhiannonlynne/photometry_sample
+    
+The `photometry_sample` directory should look like as follow:
+    
+    /Users/dagoret/rubin_sim_data/photometry_sample>ls
+	LICENSE         README.md       galaxies        mag_info        photoZ_outliers plots           quasar          sn              stars           white_dwarf
     
 
 
