@@ -5,7 +5,7 @@
 - authors : Sylvie Dagoret-Campagne & Martin Rodriguez Monroy
 - affiliation : IJCLab/IN2P3/CNRS
 - Creaiton date : February 2023
-- Last verification : February 28th 2023
+- Last verification : March 3rd 2023
 
 ## Goal
 
@@ -75,6 +75,11 @@ use the  `rubin_sim` library:
       
 In particular, magnitude calculation from the SED and filter function and the photoelectron statistic and sky background errors. 
 
+
+For the SED, I found them here
+
+    https://github.com/rhiannonlynne/photometry_sample
+    
 
 
        
