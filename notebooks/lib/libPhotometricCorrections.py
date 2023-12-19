@@ -3,7 +3,7 @@
 # Author          : Sylvie Dagoret-Campagne
 # Affiliaton      : IJCLab/IN2P3/CNRS
 # Creation Date   : 2023/02/23
-# Last update     : 2023/02/22
+# Last update     : 2023/12/15
 #
 # A python tool to calculate Photometric Correction
 # 
@@ -13,13 +13,12 @@ import os
 import sys
 from pathlib import Path
 
-import atmosphtransmemullsst
-from atmosphtransmemullsst.simpleatmospherictransparencyemulator import SimpleAtmEmulator
+from getObsAtmo import ObsAtmo
 
 from scipy import interpolate
 import numpy as np
 
-from rubin_sim.phot_utils import Bandpass, Sed
+from rubinsimphot.phot_utils import Bandpass, Sed
 
 #README.md        darksky.dat      filter_r.dat     hardware_g.dat   hardware_y.dat   lens3.dat        total_g.dat      total_y.dat
 #README_SOURCE.md detector.dat     filter_u.dat     hardware_i.dat   hardware_z.dat   m1.dat           total_i.dat      total_z.dat
@@ -63,18 +62,19 @@ def fII1(wl,phi,wlb):
     return np.trapz(phi*(wl-wlb),wl)
   
 
-print("libPhotometricCorrections.py :: Use atmosphtransmemullsst.__path__[0],'../data/simplegrid as the path to data")
-data_path = os.path.join(atmosphtransmemullsst.__path__[0],'../data/simplegrid')
-print(f"libPhotometricCorrections :: data_path = {data_path}")
+#print("libPhotometricCorrections.py :: Use atmosphtransmemullsst.__path__[0],'../data/simplegrid as the path to data")
+#data_path = os.path.join(atmosphtransmemullsst.__path__[0],'../data/simplegrid')
+#print(f"libPhotometricCorrections :: data_path = {data_path}")
 
 
        
 # The emulator as a global variable
-emul_atm = SimpleAtmEmulator(data_path)
+#emul_atm = SimpleAtmEmulator(data_path)
+emul_atm = ObsAtmo()
 
 
 class PhotometricCorrections:
-  def __init__(self,am0=1.2,pwv0=5.0,oz0=300,ncomp0=1,tau0=0.04,beta0=-1):
+  def __init__(self,am0=1.2,pwv0=5.0,oz0=300.,tau0=0.0,beta0=1.2):
         """
         Constructor
         """
@@ -85,17 +85,13 @@ class PhotometricCorrections:
         self.am0 = am0
         self.pwv0 = pwv0
         self.oz0 = oz0
-        self.ncomp0 = ncomp0
         self.tau0 = tau0
         self.beta0 = beta0
         
         # standard atmosphere
-        if ncomp0 == 1:
-          taus = [tau0]
-          betas = [beta0]    
-          self.atm_std = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0,ncomp=ncomp0, taus=taus, betas=betas, flagAerosols=True)
-        else:
-          self.atm_std = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0)
+        
+        self.atm_std = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0, tau0, beta0)
+        
           
         # instrumental filter
         self.bandpass_inst = {} 
@@ -131,7 +127,6 @@ class PhotometricCorrections:
         self.am = 1.2
         self.pwv = 0
         self.oz = 0
-        self.ncomp = 1
         self.tau = 0.04
         self.beta = -1
         
@@ -192,21 +187,18 @@ class PhotometricCorrections:
               
               
       
-  def CalculateObs(self,am=1.2,pwv=5.0,oz=300,ncomp=1,tau=0.04,beta=-1):
+  def CalculateObs(self,am=1.2,pwv=5.0,oz=300,tau=0.0,beta=1.2):
         """
         """
         self.am = am
         self.pwv = pwv 
         self.oz = oz
-        self.ncomp = ncomp
         self.tau = tau
         self.beta = beta
         
         # non standard atmosphere
-        if ncomp == 1:
-          taus = [tau]
-          betas = [beta]    
-          self.atm_nonstd = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz,ncomp=ncomp, taus=taus, betas=betas, flagAerosols=True)
+        if tau >0.0 :
+          self.atm_nonstd = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz, tau,beta)
         else:
           self.atm_std = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz)
           
@@ -233,7 +225,7 @@ class PhotometricCorrections:
           self.all_II1_nonstd[f] = the_II1
           self.all_II1sub_nonstd[f] = self.all_II1_std[f] - the_II1
           
-  def CalculateMultiObs(self,am,pwv,oz,ncomp,tau,beta):
+  def CalculateMultiObs(self,am,pwv,oz,tau,beta):
         """
         """
         
@@ -254,7 +246,7 @@ class PhotometricCorrections:
           self.allparameters = all_am
           
           for am in all_am:
-            self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
+            self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
             self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
@@ -273,7 +265,7 @@ class PhotometricCorrections:
           self.allparameters = all_pwv
             
           for pwv in all_pwv:
-            self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
+            self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
             self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
@@ -292,7 +284,7 @@ class PhotometricCorrections:
           self.allparameters = all_oz
             
           for oz in all_oz:
-            self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
+            self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
             self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
@@ -306,12 +298,12 @@ class PhotometricCorrections:
             all_tau = np.array(tau)
           else:
             all_tau = tau
-          ncomp = 1  
+          
           
           self.allparameters = all_tau
           
           for tau in all_tau:
-            self.CalculateObs(am,pwv,oz,ncomp,tau,beta)
+            self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
             self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
