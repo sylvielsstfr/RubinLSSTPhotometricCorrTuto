@@ -5,7 +5,7 @@
 - authors : Sylvie Dagoret-Campagne & Martin Rodriguez Monroy
 - affiliation : IJCLab/IN2P3/CNRS
 - Creaiton date : February 2023
-- Last verification : March 3rd 2023
+- Last verification : December 19 2023
 
 ## Goal
 
@@ -46,59 +46,32 @@ Still under developpement.
 Package to emulate atmospheric transparency
 
 
-    git clone https://github.com/sylvielsstfr/git@github.com:LSSTDESC/atmosphtransmemullsst.git
-    cd atmosphtransmemullsst
-    python -m pip install -e .
+    git clone https://github.com/LSSTDESC/getObsAtmo.git
+    cd getObsAtmo
+    python setup.py install
     
     
-- note this package contains data in the path `atmosphtransmemullsst/data/simplegrid`
-This path should be provided during runtime at initialisation.
-
-(see in the notebooks)
-
 
 ### c) Installation of rubin_sim package
 
-Package to simulate Rubin-LSST, including Filters, SED
+Package to simulate Rubin-LSST, including Filters, SED, a lite version of the rubin_sim package
 
     
-    git clone https://github.com/lsst/rubin_sim.git
-    
-Follow the installation instructions including the corresponding data: `rubin_sim_data`
+    git clone https://github.com:sylvielsstfr/rubinsimphot.git
+    cd rubinsimphot
+    pip install -e .'[dev]'
 
-
-I recommend installing `rubin_sim_data` in home directory:
-
-	/Users/dagoret/rubin_sim_data>ls
-	draft_connected_v2.99_10yrs.db movingObjects                  sim_baseline                   skybrightness_pre              versions.txt
-	maf                            orbits                         site_models                    tests
-	maps                           photometry_sample              skybrightness                  throughputs
-
-
-    
-Moreover there is a `rubin_sim` tutorial which may be read in order to
-use the  `rubin_sim` library:
-
-    https://github.com/lsst/rubin_sim_notebooks
-      
-In particular, magnitude calculation from the SED and filter function and the photoelectron statistic and sky background errors. 
-
-
-The `rubin_sim_data/photometry_sample` may not contain SEDs
-For the SED, I found them here
-
-    https://github.com/rhiannonlynne/photometry_sample
-    
-The `photometry_sample` directory should look like as follow:
-    
-    /Users/dagoret/rubin_sim_data/photometry_sample>ls
-	LICENSE         README.md       galaxies        mag_info        photoZ_outliers plots           quasar          sn              stars           white_dwarf
+Spectro-photometric Data are provided inside this lite version of rubin_sim
     
 
+ 
 
        
        
 ## Notebooks
+
+   see (README)[README.ipynb]
+   
  
         
         

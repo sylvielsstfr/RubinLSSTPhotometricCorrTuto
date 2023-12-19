@@ -3,7 +3,7 @@
 # Author          : Sylvie Dagoret-Campagne
 # Affiliaton      : IJCLab/IN2P3/CNRS
 # Creation Date   : 2023/02/18
-# Last update     : 2023/02/22
+# Last update     : 2023/12/19
 #
 # A python tool to fit quickly atmospheric transmission of Auxtel Spectra with scipy.optimize and
 # using the atmospheric emulator atmosphtransmemullsst
@@ -14,8 +14,14 @@ import os
 import sys
 from pathlib import Path
 
-import atmosphtransmemullsst
-from atmosphtransmemullsst.simpleatmospherictransparencyemulator import SimpleAtmEmulator
+#from ObsAtmo import ObsAtmo
+from getObsAtmo import ObsAtmo
+
+
+
+
+#import atmosphtransmemullsst
+#from atmosphtransmemullsst.simpleatmospherictransparencyemulator import SimpleAtmEmulator
 
 from scipy.optimize import curve_fit,least_squares
 from scipy.interpolate import RegularGridInterpolator
@@ -25,13 +31,14 @@ import pickle
 
 
 
-print("libAtmosphericFit.py :: Use atmosphtransmemullsst.__path__[0],'../data/simplegrid as the path to data")
-data_path = os.path.join(atmosphtransmemullsst.__path__[0],'../data/simplegrid')
-print(f"libAtmosphericFit.py :: data_path = {data_path}")
+#print("libAtmosphericFit.py :: Use atmosphtransmemullsst.__path__[0],'../data/simplegrid as the path to data")
+#data_path = os.path.join(atmosphtransmemullsst.__path__[0],'../data/simplegrid')
+#print(f"libAtmosphericFit.py :: data_path = {data_path}")
 
        
 # The emulator as a global variable
-emul = SimpleAtmEmulator(data_path)
+#emul = SimpleAtmEmulator(data_path)
+emul = ObsAtmo()
 
 #######################     Fuctions for fitting   ###########################################
     
