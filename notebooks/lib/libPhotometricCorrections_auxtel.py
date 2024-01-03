@@ -43,8 +43,8 @@ NFILT=len(filter_filenames)
 
 WLMIN=300.
 WLMAX=1100.
-#WLBIN=1.
-WLBIN=0.1
+WLBIN=1.
+#WLBIN=0.1
 NWLBIN=int((WLMAX-WLMIN)/WLBIN)
 WL=np.linspace(WLMIN,WLMAX,NWLBIN)
 
