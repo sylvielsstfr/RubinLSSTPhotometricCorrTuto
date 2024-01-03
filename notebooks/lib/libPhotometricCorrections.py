@@ -55,13 +55,27 @@ FILTERWL = np.array([[ 324.03003755,  402.12765957,  363.59690349,   78.09762203
        [ 808.63579474,  932.79098874,  868.488419  ,  124.15519399],
        [ 914.76846058, 1044.93116395,  969.10570859,  130.16270338]])
 
+F0 = 3631.0 # Jy 1, Jy = 10^{-23} erg.cm^{-2}.s^{-1}.Hz^{-1}
+Jy_to_ergcmm2sm1hzm1 = 1e-23
+DT = 30.0 # seconds
+gel = 1.1
+#hP = 6.62607015E-34 # J⋅Hz−1
+hP = 6.626196E-27
+A  = np.pi*642.3**2 # cm2  R=6.423 m
 
-def fII0(self,wl,s):
-        return np.trapz(s/wl,wl)
+#ZPT_cont =  2.5 \log_{10} \left(\frac{F_0 A \Delta T}{g_{el} h} \right)
+ZPTconst = 2.5*np.log10(F0*Jy_to_ergcmm2sm1hzm1*A*DT/gel/hP)
+
+
+def fII0(wl,s):
+  return np.trapz(s/wl,wl)
       
 def fII1(wl,phi,wlb):
-    return np.trapz(phi*(wl-wlb),wl)
+  return np.trapz(phi*(wl-wlb),wl)
   
+def ZPT(wl,s):
+  return 2.5*np.log10(fII0(wl,s)) + ZPTconst
+
 
 #print("libPhotometricCorrections.py :: Use atmosphtransmemullsst.__path__[0],'../data/simplegrid as the path to data")
 #data_path = os.path.join(atmosphtransmemullsst.__path__[0],'../data/simplegrid')
@@ -118,6 +132,7 @@ class PhotometricCorrections:
         # Integrals IIb0(std) and IIb1(std)
         self.all_II0_std = {}
         self.all_II1_std = {}
+        
         for index,f in enumerate(filter_tagnames):
     
           the_II0 = self.fII0(self.bandpass_total_std[f].wavelen,self.bandpass_total_std[f].sb)
@@ -131,7 +146,7 @@ class PhotometricCorrections:
         self.pwv = 0
         self.oz = 0
         self.tau = 0.04
-        self.beta = -1
+        self.beta = 1
         
         self.atm_nonstd = None
         self.bandpass_total_nonstd = None
