@@ -1,12 +1,13 @@
-# libPhotometricCorrections.py
+# libPhotometricCorrections_auxtel.py
 #
 # Author          : Sylvie Dagoret-Campagne
 # Affiliaton      : IJCLab/IN2P3/CNRS
-# Creation Date   : 2023/02/23
-# Last update     : 2023/12/15
+# Creation Date   : 2024/01/03
+# Last update     : 2024/01/03
 #
 # A python tool to calculate Photometric Correction
 # 
+# We use Auxtel transmission with SDSS filters
 #
 #
 import os
@@ -25,19 +26,25 @@ from rubinsimphot.data.data_sets import  get_data_dir
 #README_SOURCE.md detector.dat     filter_u.dat     hardware_i.dat   hardware_z.dat   m1.dat           total_i.dat      total_z.dat
 #atmos_10.dat     filter_g.dat     filter_y.dat     hardware_r.dat   lens1.dat        m2.dat           total_r.dat      version_info
 #atmos_std.dat    filter_i.dat     filter_z.dat     hardware_u.dat   lens2.dat        m3.dat           total_u.dat
-hardware_filenames = ["hardware_u.dat","hardware_g.dat","hardware_r.dat","hardware_i.dat","hardware_z.dat","hardware_y.dat"] 
-filter_filenames = ["filter_u.dat","filter_g.dat","filter_r.dat","filter_i.dat","filter_z.dat","filter_y.dat" ]
-total_filenames = ["total_u.dat","total_g.dat","total_r.dat","total_i.dat","total_z.dat","total_y.dat" ]
-filter_tagnames = ["u","g","r","i","z","y"]
-Filter_tagnames = ["U","G","R","I","Z","Y"]
-filtercolor_tagnames = ["u-g","g-r","r-i","i-z","z-y"]
-Filtercolor_tagnames = ["U-G","G-R","R-I","I-Y","Z-Y"]
-filter_color = ["b","g","r","orange","grey","k"]
+
+#/Users/dagoret/MacOSX/GitHub/LSST/AtmosphericSimulation/rubinsimphot/src/rubin_sim_data/throughputs/auxtel>ls
+#auxtel_sdss_g.dat                                                                auxtel_sdss_u.dat
+#auxtel_sdss_i.dat                                                                auxtel_sdss_z.dat
+#auxtel_sdss_r.dat                                                                multispectra_holo4_003_HD142331_20230802_AuxTel_doGainsPTC_v3.0.3_throughput.txt
+hardware_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat"] 
+filter_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat" ]
+total_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat"]
+filter_tagnames = ["u","g","r","i","z"]
+Filter_tagnames = ["U","G","R","I","Z"]
+filtercolor_tagnames = ["u-g","g-r","r-i","i-z"]
+Filtercolor_tagnames = ["U-G","G-R","R-I","I-Y"]
+filter_color = ["b","g","r","orange","grey"]
 NFILT=len(filter_filenames)
 
 WLMIN=300.
 WLMAX=1100.
 WLBIN=1.
+#WLBIN=0.1
 NWLBIN=int((WLMAX-WLMIN)/WLBIN)
 WL=np.linspace(WLMIN,WLMAX,NWLBIN)
 
@@ -48,12 +55,18 @@ WL=np.linspace(WLMIN,WLMAX,NWLBIN)
 #index 3 : filter width
 
 
-FILTERWL = np.array([[ 324.03003755,  402.12765957,  363.59690349,   78.09762203],
-       [ 392.11514393,  561.32665832,  473.54069923,  169.21151439],
-       [ 542.3028786 ,  700.50062578,  619.49926767,  158.19774718],
-       [ 681.47684606,  827.65957447,  752.01084117,  146.18272841],
-       [ 808.63579474,  932.79098874,  868.488419  ,  124.15519399],
-       [ 914.76846058, 1044.93116395,  969.10570859,  130.16270338]])
+#FILTERWL = np.array([[ 324.03003755,  402.12765957,  363.59690349,   78.09762203],
+#       [ 392.11514393,  561.32665832,  473.54069923,  169.21151439],
+#       [ 542.3028786 ,  700.50062578,  619.49926767,  158.19774718],
+#       [ 681.47684606,  827.65957447,  752.01084117,  146.18272841],
+#       [ 808.63579474,  932.79098874,  868.488419  ,  124.15519399],
+#       [ 914.76846058, 1044.93116395,  969.10570859,  130.16270338]])
+
+FILTERWL = np.array([[ 352.7 ,  395.9 ,  374.3 ,   43.2 ],
+                     [ 387.6 ,  566.2 ,  476.9 ,  178.6 ],
+                     [ 541.4 ,  715.5 ,  628.45,  174.1 ],
+                     [ 673.3 ,  870.9 ,  772.1 ,  197.6 ],
+                     [ 805.6 , 1090.7 ,  948.15,  285.1 ]])
 
 F0 = 3631.0 # Jy 1, Jy = 10^{-23} erg.cm^{-2}.s^{-1}.Hz^{-1}
 Jy_to_ergcmm2sm1hzm1 = 1e-23
@@ -61,11 +74,10 @@ DT = 30.0 # seconds
 gel = 1.1
 #hP = 6.62607015E-34 # J⋅Hz−1
 hP = 6.626196E-27
-A  = np.pi*642.3**2 # cm2  R=6.423 m
+A  = 9636.0 # cm2
 
 #ZPT_cont =  2.5 \log_{10} \left(\frac{F_0 A \Delta T}{g_{el} h} \right)
 ZPTconst = 2.5*np.log10(F0*Jy_to_ergcmm2sm1hzm1*A*DT/gel/hP)
-
 
 def fII0(wl,s):
   return np.trapz(s/wl,wl)
@@ -75,7 +87,6 @@ def fII1(wl,phi,wlb):
   
 def ZPT(wl,s):
   return 2.5*np.log10(fII0(wl,s)) + ZPTconst
-
 
 #print("libPhotometricCorrections.py :: Use atmosphtransmemullsst.__path__[0],'../data/simplegrid as the path to data")
 #data_path = os.path.join(atmosphtransmemullsst.__path__[0],'../data/simplegrid')
@@ -110,9 +121,10 @@ class PhotometricCorrections:
           
         # instrumental filter
         self.bandpass_inst = {} 
-        #path_rubin_sim_throughput=os.path.join(os.getenv("HOME"),"rubin_sim_data/throughputs/baseline")
+        #path_rubin_sim_throughput=os.path.join(os.getenv("HOME"),"rubin_sim_data/throughputs/auxtel")
         fdir = get_data_dir()
-        path_rubin_sim_throughput = os.path.join(fdir, 'throughputs', 'baseline')
+        path_rubin_sim_throughput = os.path.join(fdir, 'throughputs', 'auxtel')
+
         for index,filename in enumerate(hardware_filenames):
           fullfilename=os.path.join(path_rubin_sim_throughput,filename)
           arr= np.loadtxt(fullfilename)
@@ -132,13 +144,15 @@ class PhotometricCorrections:
         # Integrals IIb0(std) and IIb1(std)
         self.all_II0_std = {}
         self.all_II1_std = {}
-        
+        self.all_ZP = {}
+
         for index,f in enumerate(filter_tagnames):
     
           the_II0 = self.fII0(self.bandpass_total_std[f].wavelen,self.bandpass_total_std[f].sb)
           self.all_II0_std[f] = the_II0
           the_II1 = self.fII1(self.WL,self.phiArray_std[index,:],FILTERWL[index,2])
           self.all_II1_std[f] = the_II1
+          self.all_ZP[f] = 2.5*np.log10(the_II0) + ZPTconst
           
           
         # Non standard calculations will be calculated later after initialisation
@@ -178,27 +192,37 @@ class PhotometricCorrections:
       
   def CalculatePerfilter(self):
         """
-        Make collections of numbers per param
+        Given a set of non standard parameter values, the integrals are calculated for each
+        Filter.
         """
         
         self.allcollperfilter = {} # init the main directory
-        for ifilt,f in enumerate(filter_tagnames):
+
+        # loop on filters
+        for f in filter_tagnames:
           list_II0_nonstd = []
           list_II1_nonstd = []
           list_II0ratio_nonstd = []
           list_II1sub_nonstd = []
-              
+          list_ZPT_nonstd = []
+          
+          # loop on the different parameter set conditions to build a list    
           for idx,param in enumerate(self.allparameters):
             list_II0_nonstd.append(self.coll_all_II0_nonstd[idx][f])
             list_II1_nonstd.append(self.coll_all_II1_nonstd[idx][f])
             list_II0ratio_nonstd.append(self.coll_all_II0ratio_nonstd[idx][f])
             list_II1sub_nonstd.append(self.coll_all_II1sub_nonstd[idx][f])
-                
+            list_ZPT_nonstd.append(self.coll_allZP_nonstd[idx][f])
+
+           
+
+          # create a dictionnary of lists , the keys are the filter values     
           filter_dict = {}
           filter_dict["II0_nonstd"] = np.array(list_II0_nonstd)
           filter_dict["II1_nonstd"] = np.array(list_II1_nonstd)
           filter_dict["II0ratio_nonstd"] = np.array(list_II0ratio_nonstd)
           filter_dict["II1sub_nonstd"] = np.array(list_II1sub_nonstd)
+          filter_dict["ZPT_nonstd"] = np.array(list_ZPT_nonstd)
           
           self.allcollperfilter[f] = filter_dict     
                     
@@ -207,6 +231,7 @@ class PhotometricCorrections:
       
   def CalculateObs(self,am=1.2,pwv=5.0,oz=300,tau=0.0,beta=1.2):
         """
+        Calculate the integrals for a single condition
         """
         self.am = am
         self.pwv = pwv 
@@ -233,20 +258,24 @@ class PhotometricCorrections:
         self.all_II1_nonstd = {}
         self.all_II0ratio_nonstd = {}
         self.all_II1sub_nonstd = {}
+        self.all_ZP_nonstd = {}
         
-        for index,f in enumerate(filter_tagnames):
-    
+        # loop on filters
+        for index,f in enumerate(filter_tagnames):    
           the_II0 = self.fII0(self.bandpass_total_nonstd[f].wavelen,self.bandpass_total_nonstd[f].sb)
           self.all_II0_nonstd[f] = the_II0
           self.all_II0ratio_nonstd[f] = the_II0/self.all_II0_std[f]
           the_II1 = self.fII1(self.WL,self.phiArray_nonstd[index,:],FILTERWL[index,2])
           self.all_II1_nonstd[f] = the_II1
           self.all_II1sub_nonstd[f] = self.all_II1_std[f] - the_II1
+          self.all_ZP_nonstd[f] =  2.5*np.log10(the_II0) + ZPTconst
           
   def CalculateMultiObs(self,am,pwv,oz,tau,beta):
         """
+        At least on parameters is an array for varying conditions 
         """
         
+        # reset the lists of integrals per varying condtion parameter
         self.coll_atm_nonstd = []
         self.coll_bandpass_total_nonstd = []
         self.coll_phiArray_nonstd = []
@@ -254,7 +283,9 @@ class PhotometricCorrections:
         self.coll_all_II1_nonstd = []
         self.coll_all_II0ratio_nonstd = []
         self.coll_all_II1sub_nonstd = []
+        self.coll_allZP_nonstd = []
         
+        # if airmass is an array
         if isinstance(am, list) or isinstance(am, np.ndarray):
           if isinstance(am, list):
             all_am = np.array(am)
@@ -263,8 +294,12 @@ class PhotometricCorrections:
             
           self.allparameters = all_am
           
+          # loop on airmass
           for am in all_am:
+
+            #calculate all the integrals 
             self.CalculateObs(am,pwv,oz,tau,beta)
+            # copy the dictionaries (filters key) of calculated quantities
             self.coll_atm_nonstd.append(self.atm_nonstd)
             self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
             self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
@@ -272,6 +307,7 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd) 
                 
                     
         elif isinstance(pwv, list) or isinstance(pwv, np.ndarray): 
@@ -291,6 +327,7 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd) 
                 
          
         elif isinstance(oz, list) or isinstance(oz, np.ndarray): 
@@ -310,6 +347,7 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd) 
             
         elif isinstance(tau, list) or isinstance(tau, np.ndarray): 
           if isinstance(tau, list):
@@ -329,10 +367,12 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd)  
         
         else:
           print("Not implemented yet")  
-          
+
+        # copy quantities into list per atm condition  
         self.CalculatePerfilter() 
           
                   
@@ -352,13 +392,15 @@ class PhotometricCorrections:
 
 def main():
     print("============================================================")
-    print("Photometric Corrections                                     ")
+    print("Photometric Corrections for Auxtel                          ")
     print("============================================================")
     
-   # create emulator  
+  
+    # create emulator  
     # from getObsAtmo.getObsAtmo import ObsAtmo
 
-    emul =  ObsAtmo("LSST")
+    emul =  ObsAtmo("AUXTEL")
+   
     wl = [400.,800.,900.]
     am=1.2
     pwv =4.0
