@@ -1,12 +1,13 @@
-# libPhotometricCorrections.py
+# libPhotometricCorrections_auxtel.py
 #
 # Author          : Sylvie Dagoret-Campagne
 # Affiliaton      : IJCLab/IN2P3/CNRS
-# Creation Date   : 2023/02/23
-# Last update     : 2023/12/15
+# Creation Date   : 2024/01/03
+# Last update     : 2024/01/03
 #
 # A python tool to calculate Photometric Correction
 # 
+# We use Auxtel transmission with SDSS filters
 #
 #
 import os
@@ -25,19 +26,25 @@ from rubinsimphot.data.data_sets import  get_data_dir
 #README_SOURCE.md detector.dat     filter_u.dat     hardware_i.dat   hardware_z.dat   m1.dat           total_i.dat      total_z.dat
 #atmos_10.dat     filter_g.dat     filter_y.dat     hardware_r.dat   lens1.dat        m2.dat           total_r.dat      version_info
 #atmos_std.dat    filter_i.dat     filter_z.dat     hardware_u.dat   lens2.dat        m3.dat           total_u.dat
-hardware_filenames = ["hardware_u.dat","hardware_g.dat","hardware_r.dat","hardware_i.dat","hardware_z.dat","hardware_y.dat"] 
-filter_filenames = ["filter_u.dat","filter_g.dat","filter_r.dat","filter_i.dat","filter_z.dat","filter_y.dat" ]
-total_filenames = ["total_u.dat","total_g.dat","total_r.dat","total_i.dat","total_z.dat","total_y.dat" ]
-filter_tagnames = ["u","g","r","i","z","y"]
-Filter_tagnames = ["U","G","R","I","Z","Y"]
-filtercolor_tagnames = ["u-g","g-r","r-i","i-z","z-y"]
-Filtercolor_tagnames = ["U-G","G-R","R-I","I-Y","Z-Y"]
-filter_color = ["b","g","r","orange","grey","k"]
+
+#/Users/dagoret/MacOSX/GitHub/LSST/AtmosphericSimulation/rubinsimphot/src/rubin_sim_data/throughputs/auxtel>ls
+#auxtel_sdss_g.dat                                                                auxtel_sdss_u.dat
+#auxtel_sdss_i.dat                                                                auxtel_sdss_z.dat
+#auxtel_sdss_r.dat                                                                multispectra_holo4_003_HD142331_20230802_AuxTel_doGainsPTC_v3.0.3_throughput.txt
+hardware_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat"] 
+filter_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat" ]
+total_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat"]
+filter_tagnames = ["u","g","r","i","z"]
+Filter_tagnames = ["U","G","R","I","Z"]
+filtercolor_tagnames = ["u-g","g-r","r-i","i-z"]
+Filtercolor_tagnames = ["U-G","G-R","R-I","I-Y"]
+filter_color = ["b","g","r","orange","grey"]
 NFILT=len(filter_filenames)
 
 WLMIN=300.
 WLMAX=1100.
-WLBIN=1.
+#WLBIN=1.
+WLBIN=0.1
 NWLBIN=int((WLMAX-WLMIN)/WLBIN)
 WL=np.linspace(WLMIN,WLMAX,NWLBIN)
 
@@ -48,12 +55,18 @@ WL=np.linspace(WLMIN,WLMAX,NWLBIN)
 #index 3 : filter width
 
 
-FILTERWL = np.array([[ 324.03003755,  402.12765957,  363.59690349,   78.09762203],
-       [ 392.11514393,  561.32665832,  473.54069923,  169.21151439],
-       [ 542.3028786 ,  700.50062578,  619.49926767,  158.19774718],
-       [ 681.47684606,  827.65957447,  752.01084117,  146.18272841],
-       [ 808.63579474,  932.79098874,  868.488419  ,  124.15519399],
-       [ 914.76846058, 1044.93116395,  969.10570859,  130.16270338]])
+#FILTERWL = np.array([[ 324.03003755,  402.12765957,  363.59690349,   78.09762203],
+#       [ 392.11514393,  561.32665832,  473.54069923,  169.21151439],
+#       [ 542.3028786 ,  700.50062578,  619.49926767,  158.19774718],
+#       [ 681.47684606,  827.65957447,  752.01084117,  146.18272841],
+#       [ 808.63579474,  932.79098874,  868.488419  ,  124.15519399],
+#       [ 914.76846058, 1044.93116395,  969.10570859,  130.16270338]])
+
+FILTERWL = np.array([[ 352.7 ,  395.9 ,  374.3 ,   43.2 ],
+                     [ 387.6 ,  566.2 ,  476.9 ,  178.6 ],
+                     [ 541.4 ,  715.5 ,  628.45,  174.1 ],
+                     [ 673.3 ,  870.9 ,  772.1 ,  197.6 ],
+                     [ 805.6 , 1090.7 ,  948.15,  285.1 ]])
 
 
 def fII0(self,wl,s):
@@ -96,9 +109,10 @@ class PhotometricCorrections:
           
         # instrumental filter
         self.bandpass_inst = {} 
-        #path_rubin_sim_throughput=os.path.join(os.getenv("HOME"),"rubin_sim_data/throughputs/baseline")
+        #path_rubin_sim_throughput=os.path.join(os.getenv("HOME"),"rubin_sim_data/throughputs/auxtel")
         fdir = get_data_dir()
-        path_rubin_sim_throughput = os.path.join(fdir, 'throughputs', 'baseline')
+        path_rubin_sim_throughput = os.path.join(fdir, 'throughputs', 'auxtel')
+
         for index,filename in enumerate(hardware_filenames):
           fullfilename=os.path.join(path_rubin_sim_throughput,filename)
           arr= np.loadtxt(fullfilename)
@@ -337,13 +351,15 @@ class PhotometricCorrections:
 
 def main():
     print("============================================================")
-    print("Photometric Corrections                                     ")
+    print("Photometric Corrections for Auxtel                          ")
     print("============================================================")
     
-   # create emulator  
+  
+    # create emulator  
     # from getObsAtmo.getObsAtmo import ObsAtmo
 
-    emul =  ObsAtmo("LSST")
+    emul =  ObsAtmo("AUXTEL")
+   
     wl = [400.,800.,900.]
     am=1.2
     pwv =4.0
