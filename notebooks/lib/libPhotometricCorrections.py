@@ -3,7 +3,7 @@
 # Author          : Sylvie Dagoret-Campagne
 # Affiliaton      : IJCLab/IN2P3/CNRS
 # Creation Date   : 2023/02/23
-# Last update     : 2023/12/15
+# Last update     : 2024/01/04
 #
 # A python tool to calculate Photometric Correction
 # 
@@ -61,7 +61,7 @@ DT = 30.0 # seconds
 gel = 1.1
 #hP = 6.62607015E-34 # J⋅Hz−1
 hP = 6.626196E-27
-A  = np.pi*642.3**2 # cm2  R=6.423 m
+A  = np.pi*642.3**2 # cm2  Reff=6.423 m
 
 #ZPT_cont =  2.5 \log_{10} \left(\frac{F_0 A \Delta T}{g_{el} h} \right)
 ZPTconst = 2.5*np.log10(F0*Jy_to_ergcmm2sm1hzm1*A*DT/gel/hP)
@@ -104,7 +104,6 @@ class PhotometricCorrections:
         self.beta0 = beta0
         
         # standard atmosphere
-        
         self.atm_std = emul_atm.GetAllTransparencies(self.WL,am0,pwv0,oz0, tau0, beta0)
         
           
@@ -132,13 +131,15 @@ class PhotometricCorrections:
         # Integrals IIb0(std) and IIb1(std)
         self.all_II0_std = {}
         self.all_II1_std = {}
+        self.all_ZP = {}
         
+        # loop on filters
         for index,f in enumerate(filter_tagnames):
-    
           the_II0 = self.fII0(self.bandpass_total_std[f].wavelen,self.bandpass_total_std[f].sb)
           self.all_II0_std[f] = the_II0
           the_II1 = self.fII1(self.WL,self.phiArray_std[index,:],FILTERWL[index,2])
           self.all_II1_std[f] = the_II1
+          self.all_ZP[f] = 2.5*np.log10(the_II0) + ZPTconst
           
           
         # Non standard calculations will be calculated later after initialisation
@@ -155,6 +156,7 @@ class PhotometricCorrections:
         self.all_II1_nonstd = None
         self.all_II0ratio_nonstd = None
         self.all_II1sub_nonstd = None
+        self.all_ZP_nonstd  = None
         
         self.coll_atm_nonstd = None
         self.coll_bandpass_total_nonstd = None
@@ -163,6 +165,7 @@ class PhotometricCorrections:
         self.coll_all_II1_nonstd = None
         self.coll_all_II0ratio_nonstd = None
         self.coll_all_II1sub_nonstd = None
+        self.coll_allZP_nonstd = None
         
         self.allparameters = None
         self.allcollperfilter = None
@@ -178,28 +181,34 @@ class PhotometricCorrections:
       
   def CalculatePerfilter(self):
         """
-        Make collections of numbers per param
+        Given a set of non standard parameter values, the integrals are calculated for each
+        Filter.
         """
         
-        self.allcollperfilter = {} # init the main directory
-        for ifilt,f in enumerate(filter_tagnames):
+        # loop on filters
+        self.allcollperfilter = {} # init the main dictionary
+        for f in filter_tagnames:
           list_II0_nonstd = []
           list_II1_nonstd = []
           list_II0ratio_nonstd = []
           list_II1sub_nonstd = []
+          list_ZPT_nonstd = []
               
           for idx,param in enumerate(self.allparameters):
             list_II0_nonstd.append(self.coll_all_II0_nonstd[idx][f])
             list_II1_nonstd.append(self.coll_all_II1_nonstd[idx][f])
             list_II0ratio_nonstd.append(self.coll_all_II0ratio_nonstd[idx][f])
             list_II1sub_nonstd.append(self.coll_all_II1sub_nonstd[idx][f])
-                
+            list_ZPT_nonstd.append(self.coll_allZP_nonstd[idx][f])
+
+          # fill the dictionnary of integrals for that filter      
           filter_dict = {}
           filter_dict["II0_nonstd"] = np.array(list_II0_nonstd)
           filter_dict["II1_nonstd"] = np.array(list_II1_nonstd)
           filter_dict["II0ratio_nonstd"] = np.array(list_II0ratio_nonstd)
           filter_dict["II1sub_nonstd"] = np.array(list_II1sub_nonstd)
-          
+          filter_dict["ZPT_nonstd"] = np.array(list_ZPT_nonstd)
+
           self.allcollperfilter[f] = filter_dict     
                     
               
@@ -207,6 +216,7 @@ class PhotometricCorrections:
       
   def CalculateObs(self,am=1.2,pwv=5.0,oz=300,tau=0.0,beta=1.2):
         """
+        Calculate the integrals for that atmospheric parameter condition
         """
         self.am = am
         self.pwv = pwv 
@@ -215,10 +225,10 @@ class PhotometricCorrections:
         self.beta = beta
         
         # non standard atmosphere
-        if tau >0.0 :
-          self.atm_nonstd = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz, tau,beta)
-        else:
-          self.atm_std = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz)
+        #if tau >0.0 :
+        self.atm_nonstd = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz, tau,beta)
+        #else:
+        #  self.atm_std = emul_atm.GetAllTransparencies(self.WL,am,pwv,oz)
           
         # non standard total filter (instrumental x atmosphere)  
         self.bandpass_total_nonstd = {} 
@@ -233,18 +243,22 @@ class PhotometricCorrections:
         self.all_II1_nonstd = {}
         self.all_II0ratio_nonstd = {}
         self.all_II1sub_nonstd = {}
+        self.all_ZP_nonstd = {}
         
+        # loop on filters
         for index,f in enumerate(filter_tagnames):
-    
           the_II0 = self.fII0(self.bandpass_total_nonstd[f].wavelen,self.bandpass_total_nonstd[f].sb)
           self.all_II0_nonstd[f] = the_II0
           self.all_II0ratio_nonstd[f] = the_II0/self.all_II0_std[f]
           the_II1 = self.fII1(self.WL,self.phiArray_nonstd[index,:],FILTERWL[index,2])
           self.all_II1_nonstd[f] = the_II1
           self.all_II1sub_nonstd[f] = self.all_II1_std[f] - the_II1
+          self.all_ZP_nonstd[f] =  2.5*np.log10(the_II0) + ZPTconst
           
   def CalculateMultiObs(self,am,pwv,oz,tau,beta):
         """
+        At least on parameters is an array for varying conditions 
+        - loop on CalculateObs
         """
         
         self.coll_atm_nonstd = []
@@ -254,7 +268,9 @@ class PhotometricCorrections:
         self.coll_all_II1_nonstd = []
         self.coll_all_II0ratio_nonstd = []
         self.coll_all_II1sub_nonstd = []
+        self.coll_allZP_nonstd = []
         
+        # test if airmass is the varying parameter
         if isinstance(am, list) or isinstance(am, np.ndarray):
           if isinstance(am, list):
             all_am = np.array(am)
@@ -263,6 +279,7 @@ class PhotometricCorrections:
             
           self.allparameters = all_am
           
+          # loop on airmass
           for am in all_am:
             self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -272,8 +289,9 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
-                
-                    
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd)     
+
+        # test if pwv is the varying parameter            
         elif isinstance(pwv, list) or isinstance(pwv, np.ndarray): 
           if isinstance(pwv, list):
             all_pwv = np.array(pwv)
@@ -282,6 +300,7 @@ class PhotometricCorrections:
             
           self.allparameters = all_pwv
             
+          # loop on pwv
           for pwv in all_pwv:
             self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -291,8 +310,9 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
-                
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd)     
          
+        # test if ozone is the varying parameter   
         elif isinstance(oz, list) or isinstance(oz, np.ndarray): 
           if isinstance(oz, list):
             all_oz = np.array(oz)
@@ -300,7 +320,8 @@ class PhotometricCorrections:
             all_oz = oz
             
           self.allparameters = all_oz
-            
+
+          # loop on ozone 
           for oz in all_oz:
             self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -310,7 +331,9 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
-            
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd) 
+
+        # test if aerosols VAOD is the varying parameter
         elif isinstance(tau, list) or isinstance(tau, np.ndarray): 
           if isinstance(tau, list):
             all_tau = np.array(tau)
@@ -320,6 +343,7 @@ class PhotometricCorrections:
           
           self.allparameters = all_tau
           
+          # loop on tau
           for tau in all_tau:
             self.CalculateObs(am,pwv,oz,tau,beta)
             self.coll_atm_nonstd.append(self.atm_nonstd)
@@ -329,7 +353,30 @@ class PhotometricCorrections:
             self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
             self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
             self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
-        
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd) 
+
+        # test if aerosols beta is the varying parameter    
+        elif isinstance(beta, list) or isinstance(beta, np.ndarray): 
+          if isinstance(beta, list):
+            all_beta = np.array(beta)
+          else:
+            all_beta = beta
+          
+          
+          self.allparameters = all_beta
+          
+          # loop on beta
+          for beta in all_beta:
+            self.CalculateObs(am,pwv,oz,tau,beta)
+            self.coll_atm_nonstd.append(self.atm_nonstd)
+            self.coll_bandpass_total_nonstd.append(self.bandpass_total_nonstd)
+            self.coll_phiArray_nonstd.append(self.phiArray_nonstd)
+            self.coll_all_II0_nonstd.append(self.all_II0_nonstd) 
+            self.coll_all_II1_nonstd.append(self.all_II1_nonstd)
+            self.coll_all_II0ratio_nonstd.append(self.all_II0ratio_nonstd)
+            self.coll_all_II1sub_nonstd.append(self.all_II1sub_nonstd)
+            self.coll_allZP_nonstd.append(self.all_ZP_nonstd) 
+
         else:
           print("Not implemented yet")  
           
