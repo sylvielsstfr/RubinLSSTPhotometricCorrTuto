@@ -3,6 +3,7 @@
 - author : Sylvie Dagoret-Campagne
 - affiliation : IJCLab/IN2P3/CNRS
 - creation date : 2024-01-18
+- update : 2024-02-25
 
 ## purpose
 
@@ -16,3 +17,14 @@ the SED fitted by the Gaussian Process.
 
 
 - Note that the fit of the SED through the SED points allow to calculate the derivative if the SED usefull to compute the color correction.
+
+## Notebook
+
+
+- **04a_FitSEDshape.ipynb** : Just example showing how to access to SED, no fit
+                      
+- **04b_FitSEDshape-GaussianProcess.ipynb** : Fit using Gaussian Process Regression (scikit-learn)
+
+- **04c_FitSEDshape-GaussianKernelRegression.ipynb** : Fit using Gaussian Basis Function Regression (astroml)
+- 
+- **04d_FitSEDshape-GaussianBasisRegression.ipynb** : Fit using Gaussian Kernel Regression (astroml)
