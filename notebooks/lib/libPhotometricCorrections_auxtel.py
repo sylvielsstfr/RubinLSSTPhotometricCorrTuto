@@ -3,7 +3,7 @@
 # Author          : Sylvie Dagoret-Campagne
 # Affiliaton      : IJCLab/IN2P3/CNRS
 # Creation Date   : 2024/01/03
-# Last update     : 2024/01/04
+# Last update     : 2024/04/06
 #
 # A python tool to calculate Photometric Correction
 # 
@@ -31,14 +31,24 @@ from rubinsimphot.data.data_sets import  get_data_dir
 #auxtel_sdss_g.dat                                                                auxtel_sdss_u.dat
 #auxtel_sdss_i.dat                                                                auxtel_sdss_z.dat
 #auxtel_sdss_r.dat                                                                multispectra_holo4_003_HD142331_20230802_AuxTel_doGainsPTC_v3.0.3_throughput.txt
-hardware_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat"] 
-filter_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat" ]
-total_filenames = ["auxtel_sdss_u.dat","auxtel_sdss_g.dat","auxtel_sdss_r.dat","auxtel_sdss_i.dat","auxtel_sdss_z.dat"]
-filter_tagnames = ["u","g","r","i","z"]
-Filter_tagnames = ["U","G","R","I","Z"]
-filtercolor_tagnames = ["u-g","g-r","r-i","i-z"]
-Filtercolor_tagnames = ["U-G","G-R","R-I","I-Y"]
-filter_color = ["b","g","r","orange","grey"]
+
+
+filter_tagnames = ["u","g","r","i","z","y"]
+Filter_tagnames = ["U","G","R","I","Z","Y"]
+filtercolor_tagnames = ["u-g","g-r","r-i","i-z","z-y"]
+Filtercolor_tagnames = ["U-G","G-R","R-I","I-Z","Z-Y"]
+filter_color = ["b","g","r","orange","grey","k"]
+
+# New version with prime sdss filters (March-April 2024)
+hardware_filenames = ["auxtel_sdss_up_total.dat","auxtel_sdss_gp_total.dat","auxtel_sdss_rp_total.dat","auxtel_sdss_ip_total.dat","auxtel_sdss_zp_total.dat","auxtel_sdss_yp_total.dat"] 
+filter_filenames = ["auxtel_sdss_up.dat","auxtel_sdss_gp.dat","auxtel_sdss_rp.dat","auxtel_sdss_ip.dat","auxtel_sdss_zp.dat" ,"auxtel_sdss_yp.dat"]
+total_filenames = ["auxtel_sdss_up_total.dat","auxtel_sdss_gp_total.dat","auxtel_sdss_rp_total.dat","auxtel_sdss_ip_total.dat","auxtel_sdss_zp_total.dat","auxtel_sdss_yp_total.dat"]
+filter_tagnames = ["u","g","r","i","z","y"]
+Filter_tagnames = ["U","G","R","I","Z","Y"]
+filtercolor_tagnames = ["u-g","g-r","r-i","i-z","z-y"]
+Filtercolor_tagnames = ["U-G","G-R","R-I","I-Z","Z-Y"]
+filter_color = ["b","g","r","orange","grey","k"]
+
 NFILT=len(filter_filenames)
 
 WLMIN=300.
@@ -54,18 +64,14 @@ WL=np.linspace(WLMIN,WLMAX,NWLBIN)
 #index 3 : filter width
 
 
-#FILTERWL = np.array([[ 324.03003755,  402.12765957,  363.59690349,   78.09762203],
-#       [ 392.11514393,  561.32665832,  473.54069923,  169.21151439],
-#       [ 542.3028786 ,  700.50062578,  619.49926767,  158.19774718],
-#       [ 681.47684606,  827.65957447,  752.01084117,  146.18272841],
-#       [ 808.63579474,  932.79098874,  868.488419  ,  124.15519399],
-#       [ 914.76846058, 1044.93116395,  969.10570859,  130.16270338]])
 
-FILTERWL = np.array([[ 352.7 ,  395.9 ,  374.3 ,   43.2 ],
-                     [ 387.6 ,  566.2 ,  476.9 ,  178.6 ],
-                     [ 541.4 ,  715.5 ,  628.45,  174.1 ],
-                     [ 673.3 ,  870.9 ,  772.1 ,  197.6 ],
-                     [ 805.6 , 1090.7 ,  948.15,  285.1 ]])
+FILTERWL = np.array([[ 353.        ,  385.        ,  369.        ,   32.        ],
+                  [ 393.        ,  560.        ,  476.5       ,  167.        ],
+                  [ 557.        ,  703.        ,  630.        ,  146.        ],
+                  [ 688.        ,  859.        ,  773.5       ,  171.        ],
+                  [ 812.        ,  938.        ,  875.76271186,  126.        ],
+                  [ 934.        , 1060.        ,  997.        ,  126.        ]])
+
 
 F0 = 3631.0 # Jy 1, Jy = 10^{-23} erg.cm^{-2}.s^{-1}.Hz^{-1}
 Jy_to_ergcmm2sm1hzm1 = 1e-23
