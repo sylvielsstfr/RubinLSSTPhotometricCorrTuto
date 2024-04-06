@@ -31,7 +31,7 @@ total_filenames = ["total_u.dat","total_g.dat","total_r.dat","total_i.dat","tota
 filter_tagnames = ["u","g","r","i","z","y"]
 Filter_tagnames = ["U","G","R","I","Z","Y"]
 filtercolor_tagnames = ["u-g","g-r","r-i","i-z","z-y"]
-Filtercolor_tagnames = ["U-G","G-R","R-I","I-Y","Z-Y"]
+Filtercolor_tagnames = ["U-G","G-R","R-I","I-Z","Z-Y"]
 filter_color = ["b","g","r","orange","grey","k"]
 NFILT=len(filter_filenames)
 
