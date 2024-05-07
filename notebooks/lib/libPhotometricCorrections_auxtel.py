@@ -79,7 +79,7 @@ DT = 30.0 # seconds
 gel = 1.1
 #hP = 6.62607015E-34 # J⋅Hz−1
 hP = 6.626196E-27
-A  = 9636.0 # cm2
+A  = 9636.0 # cm2  Reff=1.2 m
 
 #ZPT_cont =  2.5 \log_{10} \left(\frac{F_0 A \Delta T}{g_{el} h} \right)
 ZPTconst = 2.5*np.log10(F0*Jy_to_ergcmm2sm1hzm1*A*DT/gel/hP)
