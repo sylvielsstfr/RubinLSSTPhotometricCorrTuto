@@ -21,6 +21,7 @@ import numpy as np
 
 from rubinsimphot.phot_utils import Bandpass, Sed
 from rubinsimphot.data.data_sets import  get_data_dir
+from rubinsimphot.phot_utils import PhotometricParameters 
 
 #README.md        darksky.dat      filter_r.dat     hardware_g.dat   hardware_y.dat   lens3.dat        total_g.dat      total_y.dat
 #README_SOURCE.md detector.dat     filter_u.dat     hardware_i.dat   hardware_z.dat   m1.dat           total_i.dat      total_z.dat
@@ -76,13 +77,27 @@ FILTERWL = np.array([[ 353.        ,  385.        ,  369.        ,   32.        
 F0 = 3631.0 # Jy 1, Jy = 10^{-23} erg.cm^{-2}.s^{-1}.Hz^{-1}
 Jy_to_ergcmm2sm1hzm1 = 1e-23
 DT = 30.0 # seconds
-gel = 1.1
+gel = 1.08269375
 #hP = 6.62607015E-34 # J⋅Hz−1
 hP = 6.626196E-27
-A  = 9636.0 # cm2  Reff=1.2 m
+A  = 9636.0 # cm2
+pixel_scale = 0.1 #arcsec/pixel
+readnoise = 8.96875
 
 #ZPT_cont =  2.5 \log_{10} \left(\frac{F_0 A \Delta T}{g_{el} h} \right)
 ZPTconst = 2.5*np.log10(F0*Jy_to_ergcmm2sm1hzm1*A*DT/gel/hP)
+
+def set_photometric_parameters(exptime, nexp, readnoise=readnoise):
+    # readnoise = None will use the default (8.8 e/pixel). Readnoise should be in electrons/pixel.
+    photParams = PhotometricParameters(exptime=exptime, nexp=nexp, readnoise=readnoise)
+    return photParams
+
+photoparams = set_photometric_parameters(DT, 1 , readnoise=readnoise )
+photoparams._gain = gel
+photoparams._exptime = DT
+photoparams._effarea = A
+photoparams._platescale = pixel_scale
+
 
 def fII0(wl,s):
   return np.trapz(s/wl,wl)
