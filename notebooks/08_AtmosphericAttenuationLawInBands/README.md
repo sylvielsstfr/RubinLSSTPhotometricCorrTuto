@@ -1,0 +1,5 @@
+FitDiffColorModel.ipynb
+ReadDiffColorModel.ipynb
+SimulatePWVeffectColorsFlatSlantedSEDAuxtelData_auxtelSDSSfilters-MultiAirmass.ipynb
+
+
