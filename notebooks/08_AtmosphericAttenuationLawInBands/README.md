@@ -26,4 +26,4 @@
 
 ## Cear notebooks
 
-   jupyterlab nbconvert --clear-output --inplace *.ipynb
+   jupyter nbconvert --clear-output --inplace *.ipynb
