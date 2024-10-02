@@ -19,3 +19,13 @@
 - 2024-09-03 : **FindNearestColorsPicklesAndViewAuxtelData_auxtelSDSSfilters.ipynb**: compare pickle spectra with magnitude data points and calculated magnitude points to check the validity of the association.
 
 - note data were extracted from the notebook : https://github.com/sylvielsstfr/LSST-Rehearsal2024/blob/3-still-search-for-atm-parameters-variation-on-pairs-on-quick-look/notebooks/LightCurves/MultiColor_lightCurves-DMRehearsal2024_01-AuxTel.ipynb
+
+BrowsePickles.ipynb
+CompareColorsPicklesAuxtelData_auxtelSDSSfilters.ipynb
+ComputeMagnitudesPickles_auxtelSDSSfilters.ipynb
+FindNearestColorsPicklesAndViewAuxtelData_auxtelSDSSfilters.ipynb
+FindNearestColorsPicklesAuxtelData_auxtelSDSSfilters.ipynb
+SimulateOzoneeffectColorsPicklesAuxtelData_auxtelSDSSfilters-MultiAirmass.ipynb
+SimulateOzoneeffectColorsPicklesAuxtelData_auxtelSDSSfilters.ipynb
+SimulatePWVeffectColorsPicklesAuxtelData_auxtelSDSSfilters-MultiAirmass.ipynb
+SimulatePWVeffectColorsPicklesAuxtelData_auxtelSDSSfilters.ipynb
