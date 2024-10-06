@@ -42,9 +42,11 @@
 ### Check the calibration of spectra by computing magnitudes in LSST bands (2024-10-06)
 
 
-- **CompareMagsGaiaCalspecPickleSpectra_fromhdf5.ipynb** : learn how to compute magnitudes in LSST bands, and the need to extend the gaia spectra inside LSST band range definition. 
+-**CompareMagsGaiaCalspecPickleSpectra_fromhdf5.ipynb** : learn how to compute magnitudes in LSST bands, and the need to extend the gaia spectra inside LSST band range definition. 
 
-### Comparson of Gaia spectra with Pickles SED
-- **CompareMagsGaiaCalspecSpectra_fromhdf5.ipynb** : Compare flambda and fnu
+### Comparison of Gaia spectra with Pickles SED (2024-10-06)
+-**CompareMagsGaiaCalspecSpectra_fromhdf5.ipynb** : Compare flambda and fnu
 
-### Match Gaia spectra with  Pickles
+### Match Gaia spectra with  Pickles (2024-10-06)
+
+-**FindNearestNeighbourgsGaiaCalspecPickleSpectra_fromhdf5.ipynb**
