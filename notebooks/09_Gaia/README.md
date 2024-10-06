@@ -47,6 +47,7 @@
 ### Comparison of Gaia spectra with Pickles SED (2024-10-06)
 -**CompareMagsGaiaCalspecSpectra_fromhdf5.ipynb** : Compare flambda and fnu
 
-### Match Gaia spectra with  Pickles (2024-10-06)
+### Match Gaia spectra with  Pickles by using nearest neighbourg (2024-10-06)
 
--**FindNearestNeighbourgsGaiaCalspecPickleSpectra_fromhdf5.ipynb**
+-**FindNearestNeighbourgsGaiaCalspecPickleSpectra_fromhdf5.ipynb**:
+-**LoopFindNearestNeighbourgsGaiaCalspecPickleSpectra_fromhdf5.ipynb**: all gaia spectra
