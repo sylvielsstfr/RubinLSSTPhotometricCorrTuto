@@ -37,7 +37,14 @@
 
 
 ### Smooth Gaia spectra TBD
-- **SmoothGaiaSpectra.ipynb**
+- **SmoothGaiaSpectra.ipynb** : find the good way to interpolate and extend the gaia spectrum (2024-10-05)
 
+### Check the calibration of spectra by computing magnitudes in LSST bands (2024-10-06)
+
+
+- **CompareMagsGaiaCalspecPickleSpectra_fromhdf5.ipynb** : learn how to compute magnitudes in LSST bands, and the need to extend the gaia spectra inside LSST band range definition. 
+
+### Comparson of Gaia spectra with Pickles SED
+- **CompareMagsGaiaCalspecSpectra_fromhdf5.ipynb** : Compare flambda and fnu
 
 ### Match Gaia spectra with  Pickles
